@@ -17,6 +17,8 @@ import javax.xml.bind.Marshaller;
 import com.github.bpogoda.academic.bacteriaClassifier.algorithm.BacteriaClassifier;
 import com.github.bpogoda.academic.bacteriaClassifier.algorithm.impl.ONNBacteriaClassifier;
 import com.github.bpogoda.academic.bacteriaClassifier.data.ConnectableDataSource;
+import com.github.bpogoda.academic.bacteriaClassifier.data.XMLSerializer;
+import com.github.bpogoda.academic.bacteriaClassifier.data.impl.XMLSerializerImpl;
 import com.github.bpogoda.academic.bacteriaClassifier.model.Examined;
 import com.github.bpogoda.academic.bacteriaClassifier.model.XmlExaminedList;
 
@@ -67,6 +69,24 @@ public class AppController implements Initializable {
 	@FXML Button btnClassify;
 
 	@FXML Button btnExportXML;
+
+	@FXML Label lblGamma;
+
+	@FXML Label lblGenotype1;
+
+	@FXML Label lblGenotype2;
+
+	@FXML Label lblGenotype34;
+
+	@FXML Label lblGenotype5;
+
+	@FXML Label lblGenotype6;
+
+	@FXML Label lblLastClassified;
+
+	@FXML Label lblBeta;
+
+	@FXML Label lblAlpha;
 
 	public void setDataSource(ConnectableDataSource dataSource) {
 		this.dataSource = dataSource;
@@ -144,6 +164,8 @@ public class AppController implements Initializable {
 			List<Examined> examined = Stream.of(splitToClassify).filter(genotype -> genotype.length() == 6)
 					.map(bacteriaToClassify -> bacteriaClassifier.classify(bacteriaToClassify))
 					.collect(Collectors.toList());
+			
+			displayLastExamined(examined.get(examined.size() - 1));
 
 			dataSource.saveExamined(examined);
 		} else {
@@ -151,6 +173,8 @@ public class AppController implements Initializable {
 			if (toClassify.length() == 6) {
 
 				Examined examinedSpecie = bacteriaClassifier.classify(toClassify);
+				
+				displayLastExamined(examinedSpecie);
 
 				dataSource.saveExamined(Arrays.asList(examinedSpecie));
 			} else {
@@ -162,16 +186,28 @@ public class AppController implements Initializable {
 		this.allExamined.setAll(allExamined);
 	}
 
+	private void displayLastExamined(Examined examinedSpecie) {
+		
+		String[] genes = Integer.toString(examinedSpecie.getGenotype()).split("");
+		
+		this.lblGenotype1.setText(genes[0]);
+		this.lblGenotype2.setText(genes[1]);
+		this.lblGenotype34.setText(genes[2] + genes[3]);
+		this.lblGenotype5.setText(genes[4]);
+		this.lblGenotype6.setText(genes[5]);
+		
+		this.lblAlpha.setText(genes[0] + genes[5]);
+		this.lblBeta.setText(genes[1] + genes[4]);
+		this.lblGamma.setText(genes[2] + genes[3]);
+		
+		this.lblLastClassified.setText(examinedSpecie.getSpecie());
+	}
+
 	@FXML
 	public void onExportXML() {
 		try {
-			JAXBContext contextObj = JAXBContext.newInstance(XmlExaminedList.class);
-			Marshaller marshallerObj = contextObj.createMarshaller();
-			marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-			XmlExaminedList xmlExaminedList = new XmlExaminedList(this.allExamined);
-
-			marshallerObj.marshal(xmlExaminedList, new FileOutputStream("items.xml"));
+			XMLSerializer xmlSerializer = new XMLSerializerImpl();
+			xmlSerializer.save(this.allExamined);
 		} catch (Exception e) {
 			showError("XML Serialization error", e.getMessage());
 		}
