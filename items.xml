@@ -1,7 +1,47 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <examinedList>
     <examined>
-        <genotype>123456</genotype>
-        <specie>1d</specie>
+        <genotype>111111</genotype>
+        <specie>2l</specie>
+    </examined>
+    <examined>
+        <genotype>123123</genotype>
+        <specie>2n</specie>
+    </examined>
+    <examined>
+        <genotype>124111</genotype>
+        <specie>2f</specie>
+    </examined>
+    <examined>
+        <genotype>125666</genotype>
+        <specie>5e</specie>
+    </examined>
+    <examined>
+        <genotype>421125</genotype>
+        <specie>4l</specie>
+    </examined>
+    <examined>
+        <genotype>511111</genotype>
+        <specie>4l</specie>
+    </examined>
+    <examined>
+        <genotype>512321</genotype>
+        <specie>4f</specie>
+    </examined>
+    <examined>
+        <genotype>521111</genotype>
+        <specie>8l</specie>
+    </examined>
+    <examined>
+        <genotype>531111</genotype>
+        <specie>9i</specie>
+    </examined>
+    <examined>
+        <genotype>531211</genotype>
+        <specie>9i</specie>
+    </examined>
+    <examined>
+        <genotype>651213</genotype>
+        <specie>9a</specie>
     </examined>
 </examinedList>

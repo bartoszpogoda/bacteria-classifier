@@ -25,8 +25,8 @@
          <children>
             <TextArea fx:id="tbToClassify" layoutX="14.0" layoutY="48.0" prefHeight="200.0" prefWidth="173.0" promptText="Please enter the genotypes to classify. If many, use comma as a delimiter." wrapText="true" />
             <Label layoutX="14.0" layoutY="27.0" text="To classify:" />
-            <Button layoutX="17.0" layoutY="261.0" mnemonicParsing="false" onAction="#onClassify" prefHeight="31.0" prefWidth="167.0" text="Classify" />
-            <Button layoutX="53.0" layoutY="507.0" mnemonicParsing="false" onAction="#onExportXML" text="Export XML" />
+            <Button fx:id="btnClassify" disable="true" layoutX="17.0" layoutY="261.0" mnemonicParsing="false" onAction="#onClassify" prefHeight="31.0" prefWidth="167.0" text="Classify" />
+            <Button fx:id="btnExportXML" disable="true" layoutX="53.0" layoutY="507.0" mnemonicParsing="false" onAction="#onExportXML" text="Export XML" />
          </children></AnchorPane>
    </left>
    <center>

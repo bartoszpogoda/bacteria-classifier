@@ -42,7 +42,7 @@ public class SQLLiteDataSource implements ConnectableDataSource {
 
 			try {
 				PreparedStatement getAllExamined = connection.prepareStatement("SELECT * FROM `EXAMINED`");
-				
+
 				ResultSet resultSet = getAllExamined.executeQuery();
 
 				allExamined.addAll(new ExaminedResultSetMapper().mapMany(resultSet));
@@ -63,7 +63,7 @@ public class SQLLiteDataSource implements ConnectableDataSource {
 
 			try {
 				PreparedStatement getAllFlagella = connection.prepareStatement("SELECT * FROM `FLAGELLA`");
-				
+
 				ResultSet resultSet = getAllFlagella.executeQuery();
 
 				allFlagella.addAll(new FlagellaResultSetMapper().mapMany(resultSet));
@@ -84,7 +84,7 @@ public class SQLLiteDataSource implements ConnectableDataSource {
 
 			try {
 				PreparedStatement getAllToughness = connection.prepareStatement("SELECT * FROM `TOUGHNESS`");
-				
+
 				ResultSet resultSet = getAllToughness.executeQuery();
 
 				allToughness.addAll(new ToughnessResultSetMapper().mapMany(resultSet));
@@ -99,9 +99,25 @@ public class SQLLiteDataSource implements ConnectableDataSource {
 
 	@Override
 	public void saveExamined(List<Examined> examined) throws SQLException {
-		
-		// TODO add or update
-		
+
+		this.connectionManager.execute(true, connection -> {
+
+			examined.forEach(singleExamined -> {
+				try {
+					PreparedStatement statement = connection
+							.prepareStatement("INSERT OR REPLACE " + "INTO `EXAMINED` (GENOTYPE, CLASS) VALUES (?,?)");
+					statement.setInt(1, singleExamined.getGenotype());
+					statement.setString(2, singleExamined.getSpecie());
+					statement.execute();
+
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
+			});
+
+		});
+
 	}
 
 }

@@ -4,8 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -31,17 +34,18 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Button;
 
 public class AppController implements Initializable {
 
 	private ConnectableDataSource dataSource;
 
 	private Stage primaryStage;
-	
+
 	private BacteriaClassifier bacteriaClassifier;
 
 	private final ObservableList<Examined> allExamined = FXCollections.observableArrayList();
-
+	
 	@FXML
 	TextField tbConnectionPath;
 
@@ -59,6 +63,10 @@ public class AppController implements Initializable {
 
 	@FXML
 	TextArea tbToClassify;
+
+	@FXML Button btnClassify;
+
+	@FXML Button btnExportXML;
 
 	public void setDataSource(ConnectableDataSource dataSource) {
 		this.dataSource = dataSource;
@@ -83,9 +91,11 @@ public class AppController implements Initializable {
 
 		try {
 			dataSource.connect(connectionPath);
-
+			
 			this.lblConnectionStatus.setText("CONNECTED");
 			this.lblConnectionStatus.setTextFill(Color.GREEN);
+			this.btnClassify.disableProperty().set(false);
+			this.btnExportXML.disableProperty().set(false);
 
 			this.updateExamined();
 			this.updateClassifier();
@@ -123,26 +133,33 @@ public class AppController implements Initializable {
 	}
 
 	@FXML
-	public void onClassify() {
-		String toClassify = tbToClassify.getText();
+	public void onClassify() throws SQLException {
 		
-		if(toClassify.contains(",")) {
+		String toClassify = tbToClassify.getText();
+
+		if (toClassify.contains(",")) {
 			// classify group
-			
-			
-			
+			String[] splitToClassify = toClassify.split(",");
+
+			List<Examined> examined = Stream.of(splitToClassify).filter(genotype -> genotype.length() == 6)
+					.map(bacteriaToClassify -> bacteriaClassifier.classify(bacteriaToClassify))
+					.collect(Collectors.toList());
+
+			dataSource.saveExamined(examined);
 		} else {
 			// classify single
-			if(toClassify.length() == 6) {
-				
+			if (toClassify.length() == 6) {
+
 				Examined examinedSpecie = bacteriaClassifier.classify(toClassify);
-				
-				// TODO rather than this below, fetch data from the DB
-				this.allExamined.add(examinedSpecie);
+
+				dataSource.saveExamined(Arrays.asList(examinedSpecie));
 			} else {
 				showError("Wrong genotype", "Genotype should be 6 digits long.");
 			}
 		}
+		
+		List<Examined> allExamined = dataSource.getAllExamined();
+		this.allExamined.setAll(allExamined);
 	}
 
 	@FXML
